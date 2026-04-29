@@ -1,0 +1,6 @@
+pandas
+pyarrow
+boto3
+trino
+python-dotenv
+faker
