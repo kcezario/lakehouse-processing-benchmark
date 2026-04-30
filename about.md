@@ -1,48 +1,108 @@
-# Lakehouse Processing Benchmark: Project Notes
+# Engineering Notes: Lakehouse Processing Benchmark
 
-## Purpose
+## Why this project exists
 
-This project is a portfolio-grade engineering experiment to evaluate transformation engine choices in a lakehouse pipeline.
+This repository was designed as an engineering experiment to explore how different data transformation strategies behave within a lakehouse architecture.
 
-It compares the same data flow across three engines:
+Instead of assuming which tool or engine is “better”, the goal is to observe how each approach performs under controlled conditions, making architectural trade-offs explicit rather than implicit.
 
-- Python
-- Pandas
-- Spark
+This is not a tutorial or a showcase of tools.
+It is an attempt to model decision-making in real data platforms.
 
-The goal is to expose architecture trade-offs, not to build a tutorial script.
+---
 
-## End-to-End Flow
+## Experiment philosophy
+
+Most discussions around data processing engines are driven by:
+
+* prior experience
+* community bias
+* or isolated benchmarks
+
+This project takes a different approach.
+
+It keeps ingestion, storage, and persistence constant, while varying only the transformation layer.
+By doing so, it allows observing how each engine behaves as data volume increases, without introducing confounding variables.
+
+The objective is not to reach a universal conclusion, but to understand system behavior under different constraints.
+
+---
+
+## System flow
 
 ```text
-Synthetic ingestion -> raw object storage -> transformation engine -> Trino/Iceberg persistence -> validation + metrics
+Synthetic ingestion → raw object storage → transformation engine → Trino/Iceberg persistence → validation + metrics
 ```
 
-## What Is Being Measured
+The pipeline is intentionally simple, so that the impact of the transformation layer becomes more visible.
 
-- End-to-end runtime
-- Engine runtime behavior by data volume
-- Rows requested vs rows persisted
-- Timeout and failure behavior
-- Operational overhead vs scalability potential
+---
 
-## Why This Design
+## What is being measured
 
-- **Synthetic data generation** keeps the repository safe for public use.
-- **Raw layer + final table separation** makes ownership boundaries explicit.
-- **Transformer factory pattern** allows adding engines with minimal coupling.
-- **Trino as a persistence and validation layer** keeps write/read verification consistent.
+The benchmark focuses on end-to-end behavior rather than isolated execution time.
 
-## Key Trade-offs
+Key dimensions include:
 
-- Python and Pandas are efficient for small-to-medium volumes but scale vertically.
-- Spark introduces startup and infrastructure overhead, but scales for larger workloads.
-- A single architecture can host all engines if contracts remain stable.
+* total runtime across the pipeline
+* behavior under increasing data volumes
+* rows requested vs rows successfully persisted
+* timeout and failure scenarios
+* operational overhead introduced by each engine
 
-## Intended Audience
+This allows evaluating not just performance, but also reliability and scalability characteristics.
 
-The repository is structured so a recruiter or senior engineer can quickly see:
+---
 
-- system decomposition,
-- decision rationale,
-- and measurable benchmark outcomes.
+## Design rationale
+
+Several decisions were made to keep the experiment controlled and meaningful:
+
+* **Synthetic data generation**
+  Ensures reproducibility and avoids confidentiality constraints.
+
+* **Separation between raw and final layers**
+  Makes data ownership and processing boundaries explicit.
+
+* **Transformer abstraction (factory + base classes)**
+  Allows introducing new engines without changing ingestion or persistence logic.
+
+* **Consistent persistence layer (Trino + Iceberg)**
+  Ensures that differences in output are due to transformation strategy, not storage inconsistencies.
+
+---
+
+## Observing trade-offs
+
+Each transformation approach introduces different characteristics:
+
+* Simpler engines reduce overhead but are constrained by memory and single-node execution.
+* Distributed engines introduce coordination and startup costs but offer horizontal scalability.
+* The same pipeline structure can behave very differently depending on where complexity is introduced.
+
+This project is designed to surface these differences, not to eliminate them.
+
+---
+
+## What this project demonstrates
+
+More than comparing tools, this repository demonstrates:
+
+* how to structure experiments in data engineering
+* how to isolate variables in system design
+* how architectural decisions impact end-to-end behavior
+* how to reason about trade-offs beyond intuition
+
+The codebase reflects these concerns through its modular structure and explicit boundaries.
+
+---
+
+## Intended audience
+
+This project is structured for engineers who want to understand:
+
+* how data systems behave under different processing strategies
+* how to reason about engine selection in real-world pipelines
+* how to make architectural decisions based on observation rather than assumption
+
+It is particularly relevant for data engineers and platform engineers working with lakehouse architectures.

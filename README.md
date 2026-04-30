@@ -4,6 +4,14 @@
 
 This repository is an architecture-focused benchmark for comparing data transformation strategies in a lakehouse pipeline. It evaluates how different engines behave under increasing data volumes while keeping ingestion, storage, and persistence consistent.
 
+## What this project is (and is not)
+
+This is not a performance benchmark in isolation.
+
+It is an architectural experiment designed to observe how different transformation strategies behave under controlled conditions.
+
+The goal is not to prescribe a "best" engine, but to make trade-offs visible and measurable across different data volumes and execution models.
+
 ## Problem
 
 Choosing the right transformation engine is a core data platform decision:
